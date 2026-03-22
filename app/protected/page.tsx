@@ -1,26 +1,33 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { UserInfo } from "@/components/user-info";
-import { Profile } from "@/config/permissions";
+import DashboardClient from "./client";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
 
+  // 1. Get the Auth User
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/sign-in");
 
-  const { data: profile } = await supabase
+  // 2. Fetch the Profile from your 'users' table
+  const { data: profile, error } = await supabase
     .from("users")
-    .select("id, display_name, first_name, last_name, position, is_admin")
+    .select("*")
     .eq("id", user.id)
     .single();
 
-  if (!profile) redirect("/");
+  // 🚨 ERROR HANDLING: If the user exists in Auth but not in your 'users' table, 
+  // we catch it here so the client doesn't crash.
+  if (error || !profile) {
+    console.error("Profile not found:", error);
+    return (
+      <div className="p-8 border-2 border-dashed border-red-200 rounded-xl bg-red-50 text-red-600">
+        <h2 className="font-bold">Account Setup Required</h2>
+        <p className="text-sm">We found your login, but your profile record is missing in the database.</p>
+      </div>
+    );
+  }
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Welcome</h1>
-      <UserInfo profile={profile as Profile} />
-    </div>
-  );
+  // 3. Pass the validated profile to the Client component
+  return <DashboardClient profile={profile} />;
 }
