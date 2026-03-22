@@ -1,6 +1,6 @@
 'use client'
 
-import { Gauge } from "lucide-react";
+import { Gauge, Home } from "lucide-react";
 import { Profile } from "@/config/permissions";
 import { UserInfo } from "@/components/home/user-info";
 
@@ -13,8 +13,8 @@ export default function DashboardClient({ profile }: DashboardClientProps) {
         <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
             {/* Header */}
             <header className="flex items-center space-x-3 text-slate-900">
-                <Gauge className="h-8 w-8 text-blue-600" />
-                <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                <Home className="h-8 w-8 text-blue-600" />
+                <h1 className="text-3xl font-bold tracking-tight">Home</h1>
             </header>
 
             {/* Grid: 2 columns on desktop (md+), 1 on mobile */}
